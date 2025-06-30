@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -37,7 +38,28 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // validacion para la insercion de datos
+        $this->validate($request, [
+            'name'=>'required|string',
+            'email'=>'required|email:rfc,dns|unique:users',
+            'phone'=>'required|digits:10'
+        ]);
+        // insercion de datos
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+        $user->password = Hash::make($request->password);
+        // pueden haber problemas en la tabla si el password se define
+        // con un tamaño pequeño, pero no es asi en nuestro caso pq 
+        // usamos sqlite
+        $user->status = $request->status;
+        $user->save();
+        // devolvemos un json del request
+        // return response()->json([$request]);
+
+        // devolvemos el usuario que trabajamos
+        return response()->json($user);
     }
 
     /**

@@ -32,5 +32,6 @@ $router->group(
     function () use ($router){
         // dentro ponemos todas las rutas protegidas
         $router->get('/users', 'UserController@index');
+        $router->post('/users', 'UserController@store');
     }
 );
