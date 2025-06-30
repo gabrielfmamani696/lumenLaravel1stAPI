@@ -71,6 +71,11 @@ class UserController extends Controller
     public function show($id)
     {
         //
+        $user = User::where('id', $id)->get();
+        if(count($user)<1){
+            return response()->json(['error'=>'User Not Found']);
+        }
+        return response($user);
     }
 
     /**
@@ -94,6 +99,28 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         //
+        // validacion para la insercion de datos
+        $this->validate($request, [
+            'name'=>'required|string',
+            'email'=>'required|email:rfc,dns',
+            'phone'=>'required|digits:10'
+        ]);
+        // insercion de datos
+        $user = User::where('id', $id)->first();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+        $user->password = Hash::make($request->password);
+        // pueden haber problemas en la tabla si el password se define
+        // con un tamaño pequeño, pero no es asi en nuestro caso pq 
+        // usamos sqlite
+        $user->status = $request->status;
+        $user->save();
+        // devolvemos un json del request
+        // return response()->json([$request]);
+
+        // devolvemos el usuario que trabajamos
+        return response()->json($user);
     }
 
     /**
@@ -105,5 +132,12 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
+        $user = User::where('id', $id)->first();
+        if(!$user){
+            return response()->json(['error'=> "User Not Found"]);
+        }
+        $userName = $user->name;
+        $user->delete();
+        return response()->json(["data" => "user $userName with id $id deleted succesfully"]);
     }
 }

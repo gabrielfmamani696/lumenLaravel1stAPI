@@ -32,6 +32,9 @@ $router->group(
     function () use ($router){
         // dentro ponemos todas las rutas protegidas
         $router->get('/users', 'UserController@index');
+        $router->get('/users/{id}', 'UserController@show');
+        $router->delete('/users/{id}', 'UserController@destroy');
+        $router->put('/users/{id}', 'UserController@update');
         $router->post('/users', 'UserController@store');
     }
 );
