@@ -47,9 +47,14 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show($id)
     {
         //
+        $category = Category::where('id', $id)->get();
+        if(count($category)<1){
+            return response()->json(['error'=>'Category Not Found']);
+        }
+        return response($category);
     }
 
     /**
@@ -81,8 +86,15 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
+    public function destroy($id)
     {
         //
+        $category = Category::where('id', $id)->first();
+        if(!$category){
+            return response()->json(['error'=> "category Not Found"]);
+        }
+        $catName = $category->name;
+        $category->delete();
+        return response()->json(["data" => "category $catName with id $id deleted succesfully"]);
     }
 }
