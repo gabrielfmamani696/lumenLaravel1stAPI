@@ -21,15 +21,14 @@ $router->get('/', function () use ($router) {
 
 $router->post('/auth/login', [
     // que use nuestro AuthController
-    'uses'=> 'AuthController@authenticate'
+    'uses' => 'AuthController@authenticate'
 ]);
-
 
 // hacemos un router group, al que pasamos un middleware al que llamaremos jwt.auth
 $router->group(
-    ['middleware'=>'jwt.auth'], 
+    ['middleware' => 'jwt.auth'],
     // usamos el router
-    function () use ($router){
+    function () use ($router) {
         // dentro ponemos todas las rutas protegidas
         $router->get('/users', 'UserController@index');
         $router->get('/users/{id}', 'UserController@show');

@@ -36,7 +36,7 @@
 //         // ]);
 //         // 3. Corregimos la consulta para buscar al usuario
 //         $user = User::where('email', $request->input('email'))->first(); 
-        
+
 //         if (!$user) {
 //             return response()->json([
 //                 'error' => 'El correo no existe'
@@ -116,7 +116,7 @@
 
 // }
 
-        
+
 
 
 namespace App\Http\Controllers;
@@ -135,37 +135,40 @@ class AuthController extends Controller
         $this->request = $request;
     }
 
-    public function jwt(User $user){
+    public function jwt(User $user)
+    {
         $payload = [
             // issue for token
-            "iss"=>"api-youtube-jwt",
+            "iss" => "api-youtube-jwt",
             // subject
-            "sub"=>$user->id,
-            // tiempo cuando fue creado el jwy
-            "iat"=>time(),
-            "exp"=>time() + 60*60
+            "sub" => $user->id,
+            // tiempo cuando fue creado el jwt
+            "iat" => time(),
+            "exp" => time() + 60 * 60
         ];
         return JWT::encode($payload, env('JWT_SECRET'), 'HS256');
     }
+
     // esto es una guarda en caso de que no exista el correo
-    public function authenticate(User $user){
+    public function authenticate(User $user)
+    {
 
         // valida la request del objeto que invoca este metodo para ver si tiene el email y password 
         $this->validate($this->request, [
-            'email'=>'required|email',
-            'password'=> 'required'
+            'email' => 'required|email',
+            'password' => 'required'
         ]);
 
         // compara el email que viene de la bd con la de la request
-        $user = User::where('email', $this->request->input('email'))->first(); 
+        $user = User::where('email', $this->request->input('email'))->first();
         // el correo existe?
-        if(!$user){
+        if (!$user) {
             return response()->json([
-                'error'=>'El correo no existe'
+                'error' => 'El correo no existe'
             ], 400);
         }
         // si la pass que estoy pasando es igual a la que tengo en la bd
-        if($this->request->input('password') == $user->password){
+        if ($this->request->input('password') == $user->password) {
             return response()->json([
                 'token' => $this->jwt($user)
             ], 200);
@@ -174,5 +177,4 @@ class AuthController extends Controller
             'error' => 'El correo o el password estan incorrectos'
         ], 400);
     }
-
 }
